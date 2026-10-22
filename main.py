@@ -29,8 +29,15 @@ PUBLIC_URL = os.environ.get("PUBLIC_URL", "http://localhost:8000").rstrip("/")
 ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "*").split(",")]
 DAILY_LIMIT = int(os.environ.get("DAILY_LIMIT", "3"))  # bir foydalanuvchiga kuniga
 GLOBAL_LIMIT = int(os.environ.get("GLOBAL_LIMIT", "100"))  # hamma uchun kuniga (bepul kvota tugamasligi uchun)
-GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+PROVIDER = os.environ.get("AI_PROVIDER", "gemini")  # "gemini" yoki "deepseek"
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+DEEPSEEK_MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-v4-flash")
+if PROVIDER not in ("gemini", "deepseek"):
+    raise RuntimeError("AI_PROVIDER faqat gemini yoki deepseek bo'lishi mumkin")
+if not (GEMINI_API_KEY if PROVIDER == "gemini" else DEEPSEEK_API_KEY):
+    raise RuntimeError(f"{PROVIDER} uchun API kalit .env da yo'q")
 DEV = os.environ.get("DEV", "0") == "1"  # True bo'lsa Telegramsiz sinash mumkin
 
 log = logging.getLogger("talaba")
@@ -133,20 +140,42 @@ def make_prompt(service: str, topic: str, lang: str, size: str):
     return system, u
 
 
-async def ask(system: str, user: str) -> dict:
+async def ask_gemini(system: str, user: str) -> str:
     body = {
         "systemInstruction": {"parts": [{"text": system}]},
         "contents": [{"role": "user", "parts": [{"text": user}]}],
         "generationConfig": {"responseMimeType": "application/json", "maxOutputTokens": 8192},
     }
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
     async with gate:
         r = await http.post(url, json=body, headers={"x-goog-api-key": GEMINI_API_KEY})
     if r.status_code == 429:
         raise HTTPException(503, "AI hozir band yoki bepul kvota tugadi. Birozdan keyin urinib ko'ring.")
     r.raise_for_status()
     parts = r.json()["candidates"][0]["content"]["parts"]
-    text = "".join(p.get("text", "") for p in parts)
+    return "".join(p.get("text", "") for p in parts)
+
+
+async def ask_deepseek(system: str, user: str) -> str:
+    body = {
+        "model": DEEPSEEK_MODEL,
+        "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        "response_format": {"type": "json_object"},
+        "max_tokens": 8000,
+        "stream": False,
+    }
+    async with gate:
+        r = await http.post("https://api.deepseek.com/chat/completions", json=body,
+                            headers={"Authorization": f"Bearer {DEEPSEEK_API_KEY}"})
+    if r.status_code in (402, 429):  # 402 — balans/bepul kredit tugagan
+        log.error("DeepSeek %s: %s", r.status_code, r.text[:200])
+        raise HTTPException(503, "AI hozir band yoki kredit tugadi. Birozdan keyin urinib ko'ring.")
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
+
+
+async def ask(system: str, user: str) -> dict:
+    text = await (ask_gemini if PROVIDER == "gemini" else ask_deepseek)(system, user)
     return json.loads(text[text.index("{"): text.rindex("}") + 1])
 
 
