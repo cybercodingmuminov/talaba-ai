@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Shaxsiy Talaba Platformasi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#14213d;--mute:#6b7691;--line:#e3e8f2;--acc:#0e9f8e;--acc2:#ffc83d;--on:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1626;--card:#18223a;--ink:#eef2fb;--mute:#93a0bd;--line:#26334f;--on:#06201c}}
+:root[data-theme=dark]{--bg:#0f1626;--card:#18223a;--ink:#eef2fb;--mute:#93a0bd;--line:#26334f;--on:#06201c}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;font-weight:500}
+body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{font-weight:800;font-size:18px}
+.bal{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700}
+.bal b{color:var(--acc)}
+h1{font-size:28px;line-height:1.15;font-weight:800;margin-bottom:8px}
+.lead{color:var(--mute);font-size:15px;line-height:1.5;margin-bottom:16px}
+.gift{display:inline-block;background:var(--acc2);color:#2a2100;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:800;margin-bottom:20px}
+.join{display:flex;gap:8px;margin-bottom:26px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;outline:none}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:13px 18px;background:var(--acc);color:var(--on);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+h2{font-size:19px;font-weight:800;margin:0 0 12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:8px 14px;font-size:13px}
+.tab.on{background:var(--ink);color:var(--bg)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.svc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:6px;min-height:138px}
+.svc .ic{font-size:26px}
+.svc .t{font-weight:800;font-size:15px}
+.svc .d{font-size:12px;color:var(--mute);line-height:1.4;font-weight:500}
+.svc .p{margin-top:auto;font-size:12px;font-weight:800;color:var(--acc)}
+.steps{list-style:none;padding:0;margin-bottom:28px;display:grid;gap:10px}
+.steps li{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.steps i{font-style:normal;background:var(--acc);color:var(--on);border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.steps span{font-size:13px;color:var(--mute);display:block;margin-top:2px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px}
+summary{font-weight:800;font-size:14px;cursor:pointer}
+details p{margin-top:8px;font-size:13px;color:var(--mute);line-height:1.5}
+.view{display:none}.view.on{display:block}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.plan .pr{font-size:24px;font-weight:800;margin:4px 0 8px}
+.plan p{font-size:13px;color:var(--mute);line-height:1.5;margin-bottom:12px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+nav button{flex:1;background:none;color:var(--mute);border-radius:10px;padding:8px 0;font-size:11px;display:flex;flex-direction:column;gap:2px;align-items:center}
+nav button.on{color:var(--acc)}
+nav .ni{font-size:20px}
+.sheet{position:fixed;inset:0;background:rgba(5,10,25,.55);display:none;align-items:flex-end;z-index:5}
+.sheet.on{display:flex}
+.sheet .box{background:var(--bg);width:100%;max-width:560px;margin:0 auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));display:grid;gap:10px;max-height:92vh;overflow:auto}
+.sheet label{font-size:12px;color:var(--mute);font-weight:700}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.out{font-size:13px;line-height:1.5;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px;display:none}
+@media(prefers-reduced-motion:no-preference){.sheet.on .box{animation:up .22s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.4}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand">Talaba AI</div><div class="bal">Bepul</div></header>
+ 
+<!-- BOSH SAHIFA -->
+<section class="view on" id="v-home">
+  <h1>Barcha o'quv ishlaringiz — bitta AI platformada</h1>
+  <p class="lead">Mavzuni yozing — AI prezentatsiya, mustaqil ish yoki test tayyorlab beradi.</p>
+  <div class="gift">Barcha xizmatlar mutlaqo bepul</div>
+ 
+  <h2>O'quvchimisiz? Test kodini kiriting</h2>
+  <div class="join"><input id="code" inputmode="numeric" maxlength="6" placeholder="6 xonali kod" aria-label="Test kodi"><button id="joinBtn">Qo'shilish</button></div>
+ 
+  <h2>Nimalar yarata olasiz?</h2>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-f="all">Hammasi</button>
+    <button class="tab" data-f="student">O'quvchi</button>
+    <button class="tab" data-f="teacher">O'qituvchi</button>
+  </div>
+  <div class="grid" id="grid"></div>
+ 
+  <h2>Atigi 4 qadam</h2>
+  <ol class="steps">
+    <li><i>1</i><div>Ro'yxatdan o'ting<span>Telegram orqali soniyalar ichida.</span></div></li>
+    <li><i>2</i><div>Ma'lumot kiriting<span>Mavzu, til va hajmni tanlang.</span></div></li>
+    <li><i>3</i><div>AI tayyorlaydi<span>1–3 daqiqada tayyor hujjat.</span></div></li>
+    <li><i>4</i><div>Yuklab oling<span>PPTX yoki Word — tahrirlashga tayyor.</span></div></li>
+  </ol>
+ 
+  <h2>Ko'p so'raladigan savollar</h2>
+  <details><summary>Bu bepulmi?</summary><p>Ha, ilovadan foydalanish to'liq bepul.</p></details>
+  <details><summary>Sifati qanaqa?</summary><p>AI mazmunli natija beradi. Xohlasangiz, o'zingiz tahrirlab olasiz.</p></details>
+  <details><summary>Qancha vaqt oladi?</summary><p>Odatda 1–3 daqiqa. Individual loyiha — 1–3 kun.</p></details>
+</section>
+ 
+<!-- PROFIL -->
+<section class="view" id="v-me">
+  <h1 id="hello">Profil</h1>
+  <p class="lead">AI yordamchingizga ism bering — masalan, Jarvis.</p>
+  <label style="font-size:12px;color:var(--mute);font-weight:700">Yordamchi ismi</label>
+  <input id="aiName" placeholder="Jarvis" style="margin:6px 0 12px">
+  <button id="saveName" style="width:100%;margin-bottom:10px">Saqlash</button>
+  <button class="ghost" id="themeBtn" style="width:100%">Mavzuni almashtirish (yorug' / qorong'i)</button>
+</section>
+</div>
+ 
+<nav>
+  <button class="on" data-v="home"><span class="ni">🏠</span>Bosh sahifa</button>
+  <button data-v="me"><span class="ni">👤</span>Profil</button>
+</nav>
+ 
+<!-- XIZMAT FORMASI -->
+<div class="sheet" id="sheet"><div class="box">
+  <h2 id="sTitle"></h2>
+  <div><label>Mavzu</label><textarea id="topic" rows="2" placeholder="Masalan: Sun'iy intellekt tarixi"></textarea></div>
+  <div class="row">
+    <div><label>Til</label><select id="lang"><option>O'zbekcha</option><option>Русский</option><option>English</option></select></div>
+    <div><label>Hajmi</label><select id="size"><option>Qisqa (8–10)</option><option selected>O'rtacha (12–15)</option><option>Keng (20+)</option></select></div>
+  </div>
+  <div class="out" id="out"></div>
+  <button id="go">Tayyorlash</button>
+  <button class="ghost" id="close">Yopish</button>
+</div></div>
+
+<script>
+const CFG = {
+  apiUrl: 'https://talaba-ai-1.onrender.com/api/generate'
+};
+const SERVICES = [
+  {id:'slides', ic:'📊', t:'Prezentatsiya', d:'Mavzu yozasiz — AI dizaynli slaydlar tayyorlaydi.', p:0, w:'student'},
+  {id:'coursework', ic:'📝', t:'Mustaqil ish', d:'Referat va kurs ishi: titul, reja, adabiyotlar bilan.', p:0, w:'student'},
+  {id:'math', ic:'➗', t:'Matematik test', d:'Mavzu yozing yoki kitob sahifasini suratga oling.', p:0, w:'teacher'},
+  {id:'test', ic:'✅', t:'Test tuzish', d:'Istalgan fandan variantli test — javoblar varag\'i bilan.', p:0, w:'teacher'},
+  {id:'learn', ic:'🧠', t:'AI bilan o\'rganish', d:'AI qisqa dars beradi va savollar bilan tekshiradi.', p:0, w:'student'},
+  {id:'cross', ic:'🔤', t:'Krossvord', d:'Mavzuga oid chop etsa bo\'ladigan krossvord.', p:0, w:'teacher'},
+  {id:'project', ic:'🚀', t:'Individual loyiha', d:'Sayt, dastur yoki bitiruv ishi — alohida kelishiladi.', p:0, w:'student'}
+];
+const tg = window.Telegram && Telegram.WebApp;
+if (tg){ tg.ready(); tg.expand(); if(tg.colorScheme) document.documentElement.dataset.theme = tg.colorScheme; }
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const fmt = n => n.toLocaleString('ru-RU').replace(/\u00a0/g,' ');
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+const aiName = store.get('aiName','');
+$('#hello').textContent = 'Salom, ' + (user ? user.first_name : 'talaba') + '!';
+$('#aiName').value = aiName;
+ 
+function msg(t){ tg && tg.showAlert ? tg.showAlert(t) : alert(t); }
+ 
+// Xizmatlar
+let filter = 'all', current = null;
+function renderGrid(){
+  $('#grid').innerHTML = '';
+  SERVICES.filter(s => filter==='all' || s.w===filter).forEach(s=>{
+    const b = document.createElement('button');
+    b.className = 'svc';
+    const price = 'Bepul';
+    b.innerHTML = `<span class="ic">${s.ic}</span><span class="t">${s.t}</span><span class="d">${s.d}</span><span class="p">${price}</span>`;
+    b.onclick = () => openSheet(s);
+    $('#grid').appendChild(b);
+  });
+}
+renderGrid();
+$$('.tab').forEach(t => t.onclick = () => {
+  $$('.tab').forEach(x => x.classList.remove('on')); t.classList.add('on');
+  filter = t.dataset.f; renderGrid();
+});
+ 
+function openSheet(s){
+  current = s; $('#sTitle').textContent = s.ic + ' ' + s.t;
+  $('#out').style.display = 'none'; $('#topic').value = '';
+  $('#sheet').classList.add('on'); $('#topic').focus();
+}
+$('#close').onclick = () => $('#sheet').classList.remove('on');
+$('#sheet').onclick = e => { if (e.target.id==='sheet') $('#sheet').classList.remove('on'); };
+ 
+$('#go').onclick = async () => {
+  const topic = $('#topic').value.trim();
+  if (topic.length < 3) return msg('Iltimos, mavzuni yozing.');
+  const out = $('#out'); out.style.display = 'block'; out.textContent = 'AI tayyorlayapti… 1–3 daqiqa kuting.';
+  const payload = {service: current.id, topic, lang: $('#lang').value, size: $('#size').value, initData: tg ? tg.initData : ''};
+  try{
+    if (!CFG.apiUrl){ await new Promise(r=>setTimeout(r,1200)); out.textContent = "Demo rejim: backend ulanmagan. CFG.apiUrl ga server manzilini yozing — so'rov shu ko'rinishda ketadi: " + JSON.stringify({service:payload.service, topic:payload.topic}); return; }
+    const r = await fetch(CFG.apiUrl, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+    if (!r.ok){ const e = await r.json().catch(()=>({})); throw {msg: e.detail}; }
+    const data = await r.json();
+    out.textContent = '';
+    if (data.url){
+      const a = document.createElement('a');
+      a.textContent = 'Tayyor! Yuklab olish'; a.href = data.url; a.style.cssText = 'color:var(--acc);font-weight:800';
+      a.onclick = e => { if (tg && tg.openLink){ e.preventDefault(); tg.openLink(data.url); } };
+      out.appendChild(a);
+    } else { out.style.whiteSpace = 'pre-wrap'; out.textContent = data.text || 'Tayyor!'; }
+  }catch(e){ out.textContent = (e && e.msg) ? e.msg : "Xatolik yuz berdi. Qayta urinib ko'ring."; }
+};
+ 
+// Test kodi, promo
+$('#joinBtn').onclick = () => {
+  const c = $('#code').value.trim();
+  if (!/^\d{6}$/.test(c)) return msg("Kod 6 ta raqamdan iborat bo'lishi kerak.");
+  msg('Kod qabul qilindi: ' + c + ". Test sahifasi backend ulangach ochiladi.");
+};
+// Profil
+$('#saveName').onclick = () => { store.set('aiName', $('#aiName').value.trim()); msg('Saqlandi!'); };
+$('#themeBtn').onclick = () => {
+  const d = document.documentElement, dark = d.dataset.theme==='dark' || (!d.dataset.theme && matchMedia('(prefers-color-scheme:dark)').matches);
+  d.dataset.theme = dark ? 'light' : 'dark';
+};
+ 
+// Navigatsiya
+$$('nav button').forEach(b => b.onclick = () => {
+  $$('nav button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  $$('.view').forEach(v=>v.classList.remove('on')); $('#v-'+b.dataset.v).classList.add('on');
+  scrollTo(0,0);
+});
+</script>
+</body>
+</html>
+ 
+Claude finished the response
