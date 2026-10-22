@@ -24,7 +24,7 @@ from pptx.util import Pt
 from pydantic import BaseModel
 
 load_dotenv()
-BOT_TOKEN = os.environ["BOT_TOKEN"]
+BOT_TOKEN = os.environ["8729978170:AAF3YlDLcli3Tm3s5hd2nCquJlkhp-bu6JI"]
 PUBLIC_URL = os.environ.get("PUBLIC_URL", "http://localhost:8000").rstrip("/")
 ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "*").split(",")]
 DAILY_LIMIT = int(os.environ.get("DAILY_LIMIT", "3"))  # bir foydalanuvchiga kuniga
